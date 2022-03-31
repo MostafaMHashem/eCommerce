@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Vendor;
+use App\Observers\MainCategoryObserver;
+use phpDocumentor\Reflection\Types\Parent_;
 
 class Main_Category extends Model
 {
@@ -17,10 +19,19 @@ class Main_Category extends Model
         'translation_lang', 'translation_of', 'name', 'slug', 'photo', 'active', 'created_at', 'updated_at',
     ];
 
+    // overwrite the boot() method in the Model class ,to make it observe the MainCategoryObserver 
+    protected static function boot()
+    {
+        Parent::boot();
+        Main_Category::observe(MainCategoryObserver::class);
+    }
+
+    // scope is reserved word so we the call the method with active()
     public function scopeActive ($query) {
         return $query -> where('active',1);
     }
 
+    // scope is reserved word so we the call the method with selection()
     public function scopeSelection($query) {
         return $query -> select('id', 'translation_lang', 'name', 'slug', 'photo', 'active', 'translation_of');
     }
@@ -29,6 +40,7 @@ class Main_Category extends Model
         return $this -> active == 1 ? 'مفعل ' : 'غير مغعل ';
     }
 
+    // get & attribute is reserved word all we want is the 'photo' between them 
     public function getPhotoAttribute($val) {
         return ($val !== null) ? asset('assets/' . $val) : '';
     }

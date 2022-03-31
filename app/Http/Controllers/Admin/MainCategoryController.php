@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 class MainCategoryController extends Controller
 {
     /**
-     * show all languages 
+     * show all Main Categories with default language 
      */
     public function index() {
         $default_language = get_default_lang();
@@ -184,30 +184,59 @@ class MainCategoryController extends Controller
 
     /**
      * delete the category if it doesn't have any  vendor enrolled in it
-     */
+     * delete the translations categories as well , with the relation we make in the model
+     *
+     *  delete the translation categories using the observer MainCategoryObserver::class
+     * */
     public function destroy($mainCat_id) {
-        // try {
-        //     //code...
-        // } catch (\Throwable $th) {
-        //     return redirect() -> route('admin.maincategories') -> with(['error' => 'حدث خطأ ما اثناء التخزين في قاعدة البيانات برجاء المحاولة لاحقا']);
-        // }
-        $main_category = Main_Category::find($mainCat_id);
-        if(!$main_category) {
-            return redirect() -> route('admin.maincategories') -> with(['error' => 'هذا القسم غير موجود ']);
+        try {
+            $main_category = Main_Category::find($mainCat_id);
+            if(!$main_category) {
+                return redirect() -> route('admin.maincategories') -> with(['error' => 'هذا القسم غير موجود ']);
+            }
+            $vendors = $main_category -> vendors();
+            if(isset($vendors) && $vendors -> count() > 0) {
+                return redirect() -> route('admin.maincategories') -> with(['error' => 'لا يمكن حذف هذا القسم  ']);
+            }
+    
+            // delete the image from the containing folder
+            $image = Str::after($main_category-> photo , 'assets');  // get the string name after 'assets' in --->  http://localhost/ecommerce/assets
+            $image = base_path('assets' . $image);                   // then append the image name to the path in your computer or the server , and we add 'assets' to the image path
+            unlink($image);                                          // delete the image form the containing folder
+            
+            
+            $main_category -> delete();
+    
+            return redirect() -> route('admin.maincategories') -> with(['success' => ' تم حذف القسم بنجاح  ']);
+            //code...
+        } catch (\Exception $ex) {
+            return redirect() -> route('admin.maincategories') -> with(['error' => 'حدث خطأ ما اثناء التخزين في قاعدة البيانات برجاء المحاولة لاحقا']);
         }
-        $vendors = $main_category -> vendors();
-        if(isset($vendors) && $vendors -> count() > 0) {
-            return redirect() -> route('admin.maincategories') -> with(['error' => 'لا يمكن حذف هذا القسم  ']);
-        }
-
-        // delete the image from the containing folder
-        $image = Str::after($main_category-> photo , 'assets');  // get the string name after 'assets' in --->  http://localhost/ecommerce/assets
-        $image = base_path('assets' . $image);                   // then append the image name to the path in your computer or the server , and we add 'assets' to the image path
-        unlink($image); // delete the image form the containing folder
-        
-        $main_category -> delete();
-
-        return redirect() -> route('admin.maincategories') -> with(['success' => ' تم حذف القسم بنجاح  ']);
 
     }
+
+    /**
+     * change the active columns if active == 0 then deactivate all the vendors in the category
+     *                           if active == 1 then activate the vendors in the category
+     *   and update the vendors 'active' column using the observer MainCategoryObserver::class with the vendors() relation we made in the Main_Category model
+     */
+    public function changeStatus($mainCat_id) {
+        try {
+            $main_Category = Main_Category::find($mainCat_id);
+            if(!$main_Category) {
+                return redirect() -> route('admin.maincategories') -> with(['error' => 'هذا القسم غير موجود ']);
+            }
+    
+    
+            $status = $main_Category -> active == 0 ? 1 : 0;
+            $main_Category -> update(['active' => $status]);
+            return redirect() -> route('admin.maincategories') -> with(['success' => ' تم تحديث حالة القسم بنجاح  ']);
+            
+        } catch (\Exception $ex) {
+            return redirect() -> route('admin.maincategories') -> with(['error' => 'حدث خطأ ما اثناء التخزين في قاعدة البيانات برجاء المحاولة لاحقا']);
+
+        }
+
+    }
+
 }

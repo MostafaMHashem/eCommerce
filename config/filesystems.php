@@ -45,13 +45,13 @@ return [
         // #######################
         'main_categories' => [
             'driver' => 'local',
-            'root' => base_path() . '/assets/images/main_categories',
+            'root' => public_path() . '/assets/images/main_categories',
             'url' => env('APP_URL').'/public',
             'visibility' => 'public',
         ],
         'vendors' => [
             'driver' => 'local',
-            'root' => base_path() . '/assets/images/vendors',
+            'root' => public_path() . '/assets/images/vendors',
             'url' => env('APP_URL').'/public',
             'visibility' => 'public',
         ],

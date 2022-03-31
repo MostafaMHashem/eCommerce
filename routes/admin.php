@@ -77,6 +77,9 @@ Route::group(['namespace' => 'Admin', 'middleware' => 'auth:admin'], function ()
 
         Route::get('destroy/{id}', [VendorsController::class, 'destroy']) -> name('admin.vendors.destroy');
 
+        Route::get('changeStatus/{id}', [VendorsController::class, 'changeStatus']) -> name('admin.vendors.status');
+
+
 
     }); 
 

@@ -10,6 +10,8 @@ use App\Notifications\VendorCreated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
+
 
 class VendorsController extends Controller
 {
@@ -103,7 +105,7 @@ class VendorsController extends Controller
         
         try {
             
-    $vend_id = $id;
+            $vend_id = $id;
     
             // find the vendor with id , it's a check step
             $vendor = Vendor::selection() -> find($vend_id);
@@ -161,6 +163,72 @@ class VendorsController extends Controller
             return redirect() -> route('admin.vendors') -> with(['error' => 'حدث خطأ ما اثناء التخزين في قاعدة البيانات برجاء المحاولة لاحقا']);
         }
 
+
+    }
+
+    /**
+     * delete the vendor 
+     */
+
+    public function destroy($vend_id) {
+        try {
+            $vendor = Vendor::find($vend_id);
+            if(!$vendor) {
+                return redirect() -> route('admin.vendors') -> with(['error' => 'هذا القسم غير موجود ']);
+            }
+
+            /**
+             * 
+             * 
+             * when add products and sections to the vendor 
+             * we'll make this check step
+             * $vendors = $vendor -> vendors();
+             * if(isset($vendors) && $vendors -> count() > 0) {
+             *      return redirect() -> route('admin.vendors') -> with(['error' => 'لا يمكن حذف هذا القسم  ']);
+             * }
+             * 
+             */
+
+            
+
+            // delete the logo from the containing folder
+            
+            $image = Str::after($vendor-> logo , 'assets');  // get the string name after 'assets' in --->  http://localhost/ecommerce/assets
+            $image = base_path('assets' . $image);                   // then append the image name to the path in your computer or the server , and we add 'assets' to the image path
+            unlink($image);                                          // delete the image form the containing folder
+            
+            
+            $vendor -> delete();
+    
+            return redirect() -> route('admin.vendors') -> with(['success' => ' تم حذف المتجر بنجاح  ']);
+            //code...
+        } catch (\Exception $ex) {
+            return redirect() -> route('admin.vendors') -> with(['error' => 'حدث خطأ ما اثناء التخزين في قاعدة البيانات برجاء المحاولة لاحقا']);
+        }
+
+    }
+
+    /**
+     * change the active columns if active == 0 then deactivate  the vendors 
+     *                           if active == 1 then activate the vendors 
+     *   
+     */
+    public function changeStatus($vend_id) {
+        try {
+            $vendor = Vendor::find($vend_id);
+            if(!$vendor) {
+                return redirect() -> route('admin.vendors') -> with(['error' => 'هذا المتجر غير موجود ']);
+            }
+    
+    
+            $status = $vendor -> active == 0 ? 1 : 0;
+            $vendor -> update(['active' => $status]);
+            return redirect() -> route('admin.vendors') -> with(['success' => ' تم تحديث حالة المتجر بنجاح  ']);
+            
+        } catch (\Exception $ex) {
+            return redirect() -> route('admin.vendors') -> with(['error' => 'حدث خطأ ما اثناء التخزين في قاعدة البيانات برجاء المحاولة لاحقا']);
+
+        }
 
     }
 }
