@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Vendor;
 
 class Main_Category extends Model
 {
@@ -36,4 +37,9 @@ class Main_Category extends Model
     public function main_categories_rel() {
         return $this -> hasMany(self::class, 'translation_of');
     }
+
+    // the relation one category has many vendors , and one vender belong to one category
+    public function vendors() {
+        return $this -> hasMany(Vendor::class,'category_id', 'id');
+    } 
 }

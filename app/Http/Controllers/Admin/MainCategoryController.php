@@ -5,8 +5,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\MainCategoryRequest;
 use App\Models\Main_Category;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+// use Str;
 
 use Illuminate\Http\Request;
+
 
 class MainCategoryController extends Controller
 {
@@ -129,7 +132,7 @@ class MainCategoryController extends Controller
      */
     public function update(MainCategoryRequest $request, $mainCat_id) {
         
-        // try {
+        try {
             // validate
     
             // find the category with id 
@@ -142,6 +145,9 @@ class MainCategoryController extends Controller
                 // 1- the request is an array , so we get the first element
             $category = array_values($request -> category) [0];
             
+            
+            DB::beginTransaction();
+
             // 2- update active
             if(!$request -> has('category.0.active')) {
                 $request -> request -> add(['active' => 0]);
@@ -162,12 +168,46 @@ class MainCategoryController extends Controller
                 'active' => $request -> active,
                 
             ]);
+
+            DB::commit();
+
             return redirect() -> route('admin.maincategories') -> with(['success' => 'تم التحديث بنجاح']);
             
-        // } catch (\Exception $ex) {
+        } catch (\Exception $ex) {
+            DB::rollBack();
+
+            return redirect() -> route('admin.maincategories') -> with(['error' => 'حدث خطأ ما اثناء التخزين في قاعدة البيانات برجاء المحاولة لاحقا']);
+        }
+
+
+    }
+
+    /**
+     * delete the category if it doesn't have any  vendor enrolled in it
+     */
+    public function destroy($mainCat_id) {
+        // try {
+        //     //code...
+        // } catch (\Throwable $th) {
         //     return redirect() -> route('admin.maincategories') -> with(['error' => 'حدث خطأ ما اثناء التخزين في قاعدة البيانات برجاء المحاولة لاحقا']);
         // }
+        $main_category = Main_Category::find($mainCat_id);
+        if(!$main_category) {
+            return redirect() -> route('admin.maincategories') -> with(['error' => 'هذا القسم غير موجود ']);
+        }
+        $vendors = $main_category -> vendors();
+        if(isset($vendors) && $vendors -> count() > 0) {
+            return redirect() -> route('admin.maincategories') -> with(['error' => 'لا يمكن حذف هذا القسم  ']);
+        }
 
+        // delete the image from the containing folder
+        $image = Str::after($main_category-> photo , 'assets');  // get the string name after 'assets' in --->  http://localhost/ecommerce/assets
+        $image = base_path('assets' . $image);                   // then append the image name to the path in your computer or the server , and we add 'assets' to the image path
+        unlink($image); // delete the image form the containing folder
+        
+        $main_category -> delete();
+
+        return redirect() -> route('admin.maincategories') -> with(['success' => ' تم حذف القسم بنجاح  ']);
 
     }
 }

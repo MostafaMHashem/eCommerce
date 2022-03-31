@@ -42,13 +42,20 @@ return [
             'visibility' => 'public',
         ],
         // we created it to save the photos in the folder we want
+        // #######################
         'main_categories' => [
             'driver' => 'local',
             'root' => base_path() . '/assets/images/main_categories',
             'url' => env('APP_URL').'/public',
             'visibility' => 'public',
         ],
-
+        'vendors' => [
+            'driver' => 'local',
+            'root' => base_path() . '/assets/images/vendors',
+            'url' => env('APP_URL').'/public',
+            'visibility' => 'public',
+        ],
+        // #####################
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

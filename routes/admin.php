@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\Admin\LanguageController;
 use App\Http\Controllers\Admin\MainCategoryController;
+use App\Http\Controllers\Admin\VendorsController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -55,6 +56,8 @@ Route::group(['namespace' => 'Admin', 'middleware' => 'auth:admin'], function ()
         Route::post('update/{id}', [MainCategoryController::class, 'update']) -> name('admin.maincategories.update');
 
         Route::get('destroy/{id}', [MainCategoryController::class, 'destroy']) -> name('admin.maincategories.destroy');
+        
+        Route::get('changeStatus/{id}', [MainCategoryController::class, 'changeStatus']) -> name('admin.maincategories.status');
 
 
     }); 

@@ -47,12 +47,14 @@
                                             @csrf
                                             {{-- we put this input for validation purposes to check the photo validation  --}}
                                             <input name="mainCat_id" value="{{$mainCategory -> id}}" type="hidden">
+                                            {{-- عرض الصورة --}}
                                             <div class="form-group">
                                                 <div class="text-center">
                                                     <img src="{{$mainCategory -> photo}}"
                                                         class="rounded-circle height-150" alt="صورة القسم ">
                                                 </div>
                                             </div>
+                                            {{-- إضافة صورة جديدة --}}
                                             <div class="form-group">
                                                 <label> صوره القسم </label>
                                                 <label id="projectinput7" class="file center-block">
@@ -68,6 +70,7 @@
                                                 <h4 class="form-section"><i class="ft-home"></i> بيانات  القسم </h4>
 
                                                 <div class="row">
+                                                            {{-- اسم القسم  --}}
                                                             <div class="col-md-12">
                                                                 <div class="form-group">
                                                                     {{-- we created messages.php file in resources/lang/* , and added the messages we want so that the translation will be dynamic --}}
@@ -84,6 +87,7 @@
                                                                 </div>
                                                             </div>
         
+                                                            {{-- إختصار اللغة  --}}
                                                             <div class="col-md-6 hidden">
                                                                 <div class="form-group">
                                                                     <label for="projectinput1"> أختصار اللغة - {{__('messages.' . $mainCategory -> translation_lang)}}  </label>
@@ -136,18 +140,7 @@
                                                     </li>
                                                 @endforeach
                                             @endisset
-                                            {{-- <li class="nav-item dropdown">
-                                                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
-                                                aria-haspopup="true" aria-expanded="false">
-                                                    <i class="la la-bars"></i> Dropdown
-                                                </a>
-                                                <div class="dropdown-menu">
-                                                    <a class="dropdown-item" id="dropdownIcon1-tab" href="#dropdownIcon1" data-toggle="tab"
-                                                    aria-controls="dropdownIcon1" aria-expanded="true">@fat</a>
-                                                    <a class="dropdown-item" id="dropdownIcon2-tab" href="#dropdownIcon2" data-toggle="tab"
-                                                    aria-controls="dropdownIcon2" aria-expanded="true">@mdo</a>
-                                                </div>
-                                            </li> --}}
+                                            
                                         </ul>
                                         <div class="tab-content px-1 pt-1">
                                             @isset($mainCategory -> main_categories_rel)
